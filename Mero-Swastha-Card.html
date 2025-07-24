@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mero Swastha Card</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+    <!-- QR Code Generation & Scanning Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+    <style>
+        :root {
+            --primary-color: #0052cc;
+            --dark-color: #2c3e50;
+            --light-bg: #f4f8ff;
+            --white-color: #ffffff;
+            --gray-color: #6c757d;
+            --light-gray-color: #f8f9fa;
+            --border-color: #dee2e6;
+            --danger-color: #d9534f;
+            --danger-bg: #fdeded;
+            --warning-color: #f39c12;
+            --warning-bg: #fef5e7;
+            --success-color: #28a745;
+            --success-bg: #eaf7ec;
+        }
+        
+        /* DARK MODE THEME */
+        body.dark-mode {
+            --dark-color: #f5f5f5;
+            --light-bg: #1a1a1a;
+            --white-color: #252525;
+            --gray-color: #a0a0a0;
+            --light-gray-color: #333333;
+            --border-color: #444444;
+            --success-bg: #2a3b2e;
+            --danger-bg: #4d2f2f;
+            --warning-bg: #4a3c27;
+        }
+
+        html, body { height: 100%; }
+        body { font-family: 'Roboto', sans-serif; margin: 0; background-color: var(--light-bg); color: var(--dark-color); transition: background-color 0.3s, color 0.3s; }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+        main { display: none; opacity: 0; transition: opacity 0.4s ease-in-out; }
+        main.active { display: block; opacity: 1; }
+
+        header { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; }
+        .logo { display: flex; align-items: center; gap: 10px; }
+        .logo ion-icon { font-size: 36px; color: var(--primary-color); }
+        .logo span { font-size: 22px; font-weight: 700; color: var(--primary-color); }
+        .nav-links { display: flex; align-items: center; gap: 20px; }
+        .lang-selector { display: flex; align-items: center; gap: 5px; cursor: pointer; }
+        .lang-selector a { text-decoration: none; color: var(--dark-color); font-weight: 500; }
+        .back-link { text-decoration: none; color: var(--dark-color); font-weight: 500; display: flex; align-items: center; gap: 8px; }
+        .emergency-btn { background-color: var(--danger-color); color: white; padding: 10px 20px; border-radius: 8px; text-decoration: none; font-weight: 500; display: flex; align-items: center; gap: 8px; transition: background-color 0.2s; cursor: pointer; }
+        .emergency-btn:hover { background-color: #c9302c; }
+
+        .btn { padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: 500; display: inline-flex; justify-content: center; align-items: center; gap: 10px; border: 1px solid transparent; cursor: pointer; transition: all 0.2s; }
+        .btn-primary { background-color: var(--dark-color); color: var(--light-bg); }
+        .btn-primary:hover { background-color: #4a637d; }
+        .btn-secondary { background-color: var(--white-color); color: var(--dark-color); border-color: var(--border-color); }
+        .btn-secondary:hover { background-color: var(--light-gray-color); }
+
+        .hero { text-align: center; padding: 30px 0 50px; }
+        .hero h1 { font-size: 40px; font-weight: 700; margin-bottom: 15px; }
+        .hero p { font-size: 16px; max-width: 600px; margin: 0 auto 30px; color: var(--gray-color); }
+        .hero-buttons { display: flex; justify-content: center; gap: 15px; flex-wrap: wrap; }
+        #offline-access-button { display: none; } /* Hidden by default */
+
+        .features { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; padding: 20px 0; }
+        .feature-card { background-color: var(--white-color); padding: 25px 20px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.07); text-align: center; transition: transform 0.2s, box-shadow 0.2s; }
+        .feature-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0,0,0,0.1); }
+        .feature-card ion-icon { font-size: 42px; margin-bottom: 15px; color: var(--primary-color); }
+        .feature-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 10px; }
+        .feature-card p { font-size: 15px; color: var(--gray-color); line-height: 1.5; }
+        
+        .page-header { text-align: center; padding: 15px 0 20px; }
+        .page-header h1 { font-size: 28px; margin-bottom: 8px; }
+        .page-header p { font-size: 16px; color: var(--gray-color); }
+        
+        .notification-bar { padding: 12px 20px; border-radius: 8px; font-weight: 500; margin-bottom: 20px; border: 1px solid; }
+        .notification-bar.success { background-color: var(--success-bg); color: var(--success-color); border-color: var(--success-color); }
+        .notification-bar.warning { background-color: var(--warning-bg); color: var(--warning-color); border-color: var(--warning-color); }
+
+        .content-box { background-color: var(--white-color); padding: 25px 30px; border-radius: 12px; box-shadow: 0 6px 15px rgba(0,0,0,0.07); margin-bottom: 25px; }
+        .content-box h3 { font-size: 20px; display: flex; align-items: center; gap: 10px; margin-top: 0; margin-bottom: 25px; }
+        
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        .form-group { display: flex; flex-direction: column; }
+        .form-group.full-width { grid-column: 1 / -1; }
+        .form-group label { margin-bottom: 8px; font-weight: 500; }
+        .form-group label .required { color: var(--danger-color); }
+        .form-group input, .form-group select, .form-group textarea { padding: 12px 15px; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--light-gray-color); font-size: 16px; font-family: 'Roboto', sans-serif; color: var(--dark-color); }
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(0, 82, 204, 0.2); }
+        textarea { resize: vertical; min-height: 100px; }
+        .page-actions { display: flex; justify-content: flex-end; gap: 15px; margin-top: 15px; }
+        
+        #qrcode-container { display: inline-flex; background-color: white; padding: 15px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        .qr-code-display { text-align: center; padding-top: 10px; }
+        .qr-code-display .btn-group { display: flex; justify-content: center; gap: 15px; margin-top: 25px; }
+
+        .camera-placeholder { min-height: 280px; border: 2px dashed var(--border-color); background-color: var(--light-gray-color); border-radius: 8px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 20px; position: relative; transition: background-color 0.2s; }
+        .camera-placeholder.dragover { background-color: #e0e9f5; border-color: var(--primary-color); }
+        .camera-idle { display: flex; flex-direction: column; align-items: center; gap: 15px; color: var(--gray-color); }
+        .camera-idle ion-icon { font-size: 64px; color: #ccc; }
+        .camera-scanning { width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        .scanner-animation { width: 180px; height: 180px; background-color: #e9ecef; border-radius: 12px; position: relative; overflow: hidden; }
+        .scanner-animation::after { content: ''; position: absolute; top: -10px; left: 0; width: 100%; height: 4px; background: rgba(217, 83, 79, 0.8); box-shadow: 0 0 10px var(--danger-color); border-radius: 2px; animation: scan-line 2.5s ease-in-out infinite; }
+        .camera-scanning span { margin-top: 20px; font-weight: 500; font-size: 18px; color: var(--gray-color); }
+        @keyframes scan-line { 0% { transform: translateY(0); } 100% { transform: translateY(190px); } }
+        
+        .manual-entry-form { display: flex; gap: 10px; }
+        .manual-entry-form input { flex-grow: 1; padding: 12px 15px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 16px; }
+        .example-ids { font-size: 14px; color: var(--gray-color); margin-top: 10px; }
+        
+        .info-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px 30px; }
+        .info-item { display: flex; flex-direction: column; }
+        .info-item .label { color: var(--gray-color); font-size: 14px; margin-bottom: 5px; }
+        .info-item .value { font-weight: 500; font-size: 18px; word-wrap: break-word; }
+        .info-item .blood-group { display: flex; align-items: center; gap: 8px; }
+        .info-item .blood-group ion-icon { color: var(--danger-color); }
+        .allergies-list { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-start; }
+        .allergies-list .label { font-weight: 500; margin-top: 5px;}
+        .allergy-tag { background-color: var(--danger-bg); color: var(--danger-color); padding: 5px 12px; border-radius: 20px; font-weight: 500; display: inline-flex; align-items: center; gap: 5px; border: 1px solid var(--danger-color); }
+        .patient-page-actions { display: flex; gap: 20px; margin-top: 30px; }
+        .patient-page-actions .btn { flex: 1; }
+
+        .dashboard-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+        .dashboard-header h1 { margin: 0; font-size: 28px; }
+        .dashboard-header p { margin: 5px 0 0; color: var(--gray-color); }
+        .tabs { display: flex; gap: 10px; border-bottom: 1px solid var(--border-color); margin-bottom: 25px; }
+        .tab-btn { background: none; border: none; padding: 12px 15px; font-size: 16px; font-weight: 500; cursor: pointer; color: var(--gray-color); position: relative; }
+        .tab-btn.active { color: var(--primary-color); }
+        .tab-btn.active::after { content: ''; position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background-color: var(--primary-color); }
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 25px; }
+        
+        .visits-list { list-style: none; padding: 0; margin: 0; }
+        .visits-list li { display: flex; justify-content: space-between; align-items: flex-start; padding: 15px; border-bottom: 1px solid var(--border-color); gap: 15px; }
+        .visits-list li:last-child { border-bottom: none; }
+        .visits-list .visit-details { font-weight: 500; flex: 1; }
+        .visits-list .visit-date { color: var(--gray-color); text-align: right; }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); display: none; justify-content: center; align-items: center; z-index: 1000; opacity: 0; transition: opacity 0.3s ease; }
+        .modal-overlay.visible { display: flex; }
+        .modal-content { background-color: var(--white-color); padding: 30px 40px; border-radius: 12px; text-align: center; max-width: 450px; width: 90%; box-shadow: 0 5px 15px rgba(0,0,0,0.3); transform: scale(0.95); transition: transform 0.3s ease; }
+        .modal-content h2 { font-size: 24px; margin-top: 15px; margin-bottom: 10px; }
+        .modal-content p { color: var(--gray-color); margin-bottom: 25px; line-height: 1.6; }
+        .spinner { width: 50px; height: 50px; border: 5px solid var(--light-gray-color); border-top-color: var(--primary-color); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 15px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .success-icon ion-icon { font-size: 64px; color: var(--success-color); }
+
+        /* Dark Mode Toggle Switch */
+        .theme-switch-wrapper { display: flex; align-items: center; margin-left: 20px; }
+        .theme-switch { position: relative; display: inline-block; width: 50px; height: 26px; }
+        .theme-switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        .slider ion-icon { position: absolute; font-size: 16px; color: white; top: 50%; transform: translateY(-50%); transition: opacity 0.4s; }
+        .slider .sun-icon { right: 6px; opacity: 0; }
+        .slider .moon-icon { left: 6px; opacity: 1; }
+        input:checked + .slider { background-color: var(--primary-color); }
+        input:checked + .slider:before { transform: translateX(24px); }
+        input:checked + .slider .sun-icon { opacity: 1; }
+        input:checked + .slider .moon-icon { opacity: 0; }
+
+        @media (max-width: 768px) {
+            .hero h1, .page-header h1, .dashboard-header h1 { font-size: 24px; }
+            .form-grid, .info-grid, .dashboard-grid { grid-template-columns: 1fr; }
+            .manual-entry-form, .patient-page-actions { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+
+    <main id="main-page" class="active">
+        <div class="container">
+            <header>
+                <div class="logo">
+                    <ion-icon name="qr-code-outline"></ion-icon>
+                    <span data-lang-key="app_title">More Swastha Card</span>
+                    <div class="theme-switch-wrapper">
+                        <label class="theme-switch" for="dark-mode-toggle">
+                            <input type="checkbox" id="dark-mode-toggle" />
+                            <span class="slider round">
+                                <ion-icon name="moon" class="moon-icon"></ion-icon>
+                                <ion-icon name="sunny" class="sun-icon"></ion-icon>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+                <nav class="nav-links">
+                    <div class="lang-selector"><ion-icon name="globe-outline"></ion-icon><a id="lang-toggle" href="#">नेपाली</a></div>
+                    <a href="#" class="emergency-btn"><ion-icon name="alert-circle-outline"></ion-icon><span data-lang-key="emergency_access">Emergency Access</span></a>
+                </nav>
+            </header>
+            <section class="hero">
+                <h1 data-lang-key="hero_title">Digital Health ID for Every Nepali</h1>
+                <p data-lang-key="hero_subtitle">Your complete medical history in a secure, scannable QR card that works online and offline.</p>
+                <div class="hero-buttons">
+                    <button class="btn btn-primary nav-btn" data-target="form-page"><ion-icon name="id-card-outline"></ion-icon><span data-lang-key="get_health_id">Get Your Health ID</span></button>
+                    <button class="btn btn-secondary nav-btn" data-target="scanner-page"><ion-icon name="scan-outline"></ion-icon><span data-lang-key="scan_qr_card">Scan QR Card</span></button>
+                    <button class="btn btn-secondary nav-btn" data-target="clinic-portal-page"><ion-icon name="business-outline"></ion-icon><span data-lang-key="clinic_portal">Clinic Portal</span></button>
+                    <button id="offline-access-button" class="btn btn-secondary"><ion-icon name="cloud-offline-outline"></ion-icon><span data-lang-key="view_last_patient">View Last Patient (Offline)</span></button>
+                </div>
+            </section>
+            <section class="features">
+                <div class="feature-card"><ion-icon name="cloud-offline-outline"></ion-icon><h3 data-lang-key="feature1_title">Works Offline</h3><p data-lang-key="feature1_desc">Access critical health information without internet connection</p></div>
+                <div class="feature-card"><ion-icon name="shield-checkmark-outline"></ion-icon><h3 data-lang-key="feature2_title">Privacy First</h3><p data-lang-key="feature2_desc">Your data is encrypted and only accessible to authorized healthcare providers</p></div>
+                <div class="feature-card"><ion-icon name="earth-outline"></ion-icon><h3 data-lang-key="feature3_title">Universal Access</h3><p data-lang-key="feature3_desc">No smartphone needed - printed QR cards work everywhere</p></div>
+                <div class="feature-card"><ion-icon name="people-outline"></ion-icon><h3 data-lang-key="feature4_title">Family Support</h3><p data-lang-key="feature4_desc">Manage health records for elderly and children</p></div>
+            </section>
+        </div>
+    </main>
+
+    <main id="form-page">
+        <div class="container">
+            <header><a href="#" class="back-link nav-btn" data-target="main-page"><ion-icon name="arrow-back-outline"></ion-icon><span data-lang-key="back">Back</span></a></header>
+            <div class="page-header"><h1 data-lang-key="form_title">Create Your Health ID</h1><p data-lang-key="form_subtitle">Fill in your basic information to generate your QR Swastha Card</p></div>
+            <form id="health-form" class="content-box" style="max-width: 800px; margin: 0 auto;">
+                 <div class="form-section"><h3><ion-icon name="person-circle-outline" style="color: var(--primary-color)"></ion-icon><span data-lang-key="personal_info">Personal Information</span></h3><div class="form-grid"><div class="form-group"><label for="full-name" data-lang-key="full_name">Full Name</label><input type="text" id="full-name" data-lang-key-placeholder="placeholder_enter_name" required></div><div class="form-group"><label for="dob" data-lang-key="dob">Date of Birth</label><input type="text" id="dob" data-lang-key-placeholder="placeholder_dob" onfocus="(this.type='date')" onblur="(this.type='text')" required></div><div class="form-group"><label for="gender" data-lang-key="gender">Gender</label><select id="gender" required><option value="" disabled selected data-lang-key="placeholder_gender">Select gender</option><option value="Male">Male</option><option value="Female">Female</option><option value="Other">Other</option></select></div><div class="form-group"><label for="blood-group" data-lang-key="blood_group">Blood Group</label><select id="blood-group" required><option value="" disabled selected data-lang-key="placeholder_blood_group">Select blood group</option><option value="A+">A+</option><option value="A-">A-</option><option value="B+">B+</option><option value="B-">B-</option><option value="AB+">AB+</option><option value="AB-">AB-</option><option value="O+">O+</option><option value="O-">O-</option></select></div><div class="form-group"><label for="phone" data-lang-key="phone_number">Phone Number</label><input type="tel" id="phone" data-lang-key-placeholder="placeholder_phone" required></div></div></div>
+                 <div class="form-section"><h3><ion-icon name="alert-circle-outline"></ion-icon><span data-lang-key="emergency_contact">Emergency Contact</span></h3><div class="form-grid"><div class="form-group"><label for="emergency-name" data-lang-key="emergency_name">Contact Name</label><input type="text" id="emergency-name" data-lang-key-placeholder="placeholder_contact_name" required></div><div class="form-group"><label for="emergency-phone" data-lang-key="emergency_phone">Contact Phone</label><input type="tel" id="emergency-phone" data-lang-key-placeholder="placeholder_phone" required></div></div></div>
+                 <div class="form-section"><h3><ion-icon name="medkit-outline" style="color: var(--primary-color)"></ion-icon><span data-lang-key="medical_info">Medical Information (Optional)</span></h3><div class="form-grid"><div class="form-group full-width"><label for="allergies" data-lang-key="known_allergies">Known Allergies</label><textarea id="allergies" data-lang-key-placeholder="placeholder_allergies"></textarea></div><div class="form-group full-width"><label for="medications" data-lang-key="current_meds">Current Medications</label><textarea id="medications" data-lang-key-placeholder="placeholder_meds"></textarea></div><div class="form-group full-width"><label for="history" data-lang-key="medical_history">Medical History</label><textarea id="history" data-lang-key-placeholder="placeholder_history"></textarea></div></div></div>
+                 <div class="page-actions"><button type="button" class="btn btn-secondary nav-btn" data-target="main-page"><span data-lang-key="cancel">Cancel</span></button><button type="submit" class="btn btn-primary"><span data-lang-key="create_health_id_button">Create Health ID</span></button></div>
+            </form>
+        </div>
+    </main>
+    
+    <main id="qr-page">
+         <div class="container"><div class="page-header"><h1 data-lang-key="qr_title">Your Health ID is Ready!</h1><p data-lang-key="qr_subtitle">Scan the QR code below to access your health information. <br/>Save it to your phone or print it out.</p></div><div class="qr-code-display"><div id="qrcode-container"></div><div class="btn-group"><button id="download-qr-btn" class="btn btn-secondary"><ion-icon name="download-outline"></ion-icon><span data-lang-key="download_qr">Download QR</span></button><button class="btn btn-primary nav-btn" data-target="main-page"><ion-icon name="checkmark-done-outline"></ion-icon><span data-lang-key="done">Done</span></button></div></div></div>
+    </main>
+
+    <main id="scanner-page">
+        <div class="container">
+            <header><a href="#" class="back-link nav-btn" data-target="main-page"><ion-icon name="arrow-back-outline"></ion-icon><span data-lang-key="back">Back</span></a></header>
+            <div class="page-header"><h1 data-lang-key="scanner_title">QR Code Scanner</h1><p data-lang-key="scanner_subtitle">Scan patient QR cards to access medical records</p></div>
+            <div style="max-width: 600px; margin: 0 auto;">
+                <div class="content-box"><h3><ion-icon name="camera-outline"></ion-icon><span data-lang-key="qr_scanner_box_title">QR Scanner</span></h3><div class="camera-placeholder" id="drop-zone"><div class="camera-idle" id="camera-idle-view"><ion-icon name="camera-outline"></ion-icon><span data-lang-key="scanner_position">Position the QR code within the camera frame</span><p style="margin: 10px 0;" data-lang-key="or_drop">or drop an image</p><label for="qr-file-input" class="btn btn-secondary"><ion-icon name="cloud-upload-outline"></ion-icon><span data-lang-key="select_file">Select File</span></label><input type="file" id="qr-file-input" accept="image/*" style="display:none;"></div><div class="camera-scanning" id="camera-scanning-view" style="display: none;"><div class="scanner-animation"></div><span data-lang-key="scanning">Scanning QR Code...</span></div></div></div>
+                <div class="content-box"><h3><ion-icon name="search-outline"></ion-icon><span data-lang-key="manual_entry_title">Or enter Patient ID manually</span></h3><form class="manual-entry-form" id="manual-search-form"><input type="text" data-lang-key-placeholder="placeholder_patient_id"><button type="submit" class="btn btn-primary"><span data-lang-key="search_patient">Search Patient</span></button></form><p class="example-ids" data-lang-key="example_ids">Example IDs: QR12345678, QR87654321</p></div>
+            </div>
+        </div>
+    </main>
+    
+    <main id="patient-found-page">
+        <div class="container">
+            <header><a href="#" class="back-link" id="patient-page-back-btn"><ion-icon name="arrow-back-outline"></ion-icon><span data-lang-key="back">Back</span></a></header>
+            <div id="offline-indicator" class="notification-bar warning" style="display: none;"><ion-icon name="cloud-offline-outline"></ion-icon> <span data-lang-key="offline_mode_notice">Viewing Offline Data. Information may not be current.</span></div>
+            <div class="page-header"><h1 data-lang-key="patient_found_title">Patient Found</h1></div>
+            <div style="max-width: 700px; margin: 0 auto;">
+                <div class="content-box"><h3><ion-icon name="person-circle-outline"></ion-icon><span data-lang-key="patient_info">Patient Information</span></h3><div class="info-grid"><div class="info-item"><span class="label" data-lang-key="name">Name</span><span class="value" data-value="name"></span></div><div class="info-item"><span class="label" data-lang-key="patient_id">Patient ID</span><span class="value" data-value="patient-id"></span></div><div class="info-item"><span class="label" data-lang-key="dob">Date of Birth</span><span class="value" data-value="dob"></span></div><div class="info-item"><span class="label" data-lang-key="gender">Gender</span><span class="value" data-value="gender"></span></div><div class="info-item"><span class="label" data-lang-key="phone_number">Phone Number</span><span class="value" data-value="phone"></span></div><div class="info-item"><span class="label" data-lang-key="blood_group">Blood Group</span><span class="value blood-group" data-value="blood-group"><ion-icon name="water-outline"></ion-icon></span></div></div></div>
+                <div class="content-box"><h3><ion-icon name="alert-circle-outline" style="color: var(--danger-color);"></ion-icon><span data-lang-key="medical_alerts">Medical Alerts</span></h3><div class="info-item" style="margin-bottom: 15px;"><span class="label" data-lang-key="known_allergies">Known Allergies</span><div class="allergies-list" data-value="allergies"></div></div><div class="info-item" style="margin-bottom: 15px;"><span class="label" data-lang-key="current_meds">Current Medications</span><span class="value" data-value="medications"></span></div><div class="info-item"><span class="label" data-lang-key="medical_history">Medical History</span><span class="value" data-value="history"></span></div></div>
+                <div class="content-box"><h3><ion-icon name="call-outline" style="color: var(--warning-color);"></ion-icon><span data-lang-key="emergency_info">Emergency Information</span></h3><div class="info-grid"><div class="info-item"><span class="label" data-lang-key="emergency_name">Contact Name</span><span class="value" data-value="emergencyName"></span></div><div class="info-item"><span class="label" data-lang-key="emergency_phone">Contact Phone</span><span class="value" data-value="emergencyPhone"></span></div></div></div>
+                <div class="content-box"><h3><ion-icon name="time-outline"></ion-icon><span data-lang-key="visit_history">Visit History</span></h3><ul class="visits-list" id="patient-visit-history"></ul></div>
+                <div class="patient-page-actions"><button class="btn btn-primary" id="add-visit-record-btn"><ion-icon name="add-circle-outline"></ion-icon><span data-lang-key="add_visit_record">Add New Visit Record</span></button><button class="btn btn-secondary" id="download-report-btn"><ion-icon name="document-text-outline"></ion-icon><span data-lang-key="download_report">Download Report</span></button></div>
+            </div>
+        </div>
+    </main>
+
+    <main id="add-visit-page">
+        <div class="container">
+            <header><a href="#" class="back-link nav-btn" data-target="clinic-dashboard-page"><ion-icon name="arrow-back-outline"></ion-icon><span data-lang-key="back_to_dashboard">Back to Dashboard</span></a></header>
+            <div class="page-header"><h1 data-lang-key="add_visit_record">Add Visit Record</h1><p id="visit-patient-name"></p></div>
+            <div class="content-box" style="max-width: 600px; margin: 0 auto;">
+                <form id="add-visit-form">
+                    <div class="form-group full-width" style="margin-bottom: 20px;"><label for="visit-date" data-lang-key="visit_date">Date of Visit</label><input type="date" id="visit-date" required></div>
+                    <div class="form-group full-width" style="margin-bottom: 20px;"><label for="visit-reason" data-lang-key="visit_reason">Reason for Visit / Notes</label><textarea id="visit-reason" rows="6" data-lang-key-placeholder="placeholder_visit_reason" required></textarea></div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;"><span data-lang-key="save_visit">Save Visit Record</span></button>
+                </form>
+            </div>
+        </div>
+    </main>
+    
+    <main id="clinic-portal-page">
+        <div class="container">
+            <header><a href="#" class="back-link nav-btn" data-target="main-page"><ion-icon name="arrow-back-outline"></ion-icon><span data-lang-key="back">Back</span></a></header>
+            <div class="page-header"><h1 data-lang-key="clinic_portal">Clinic Portal</h1><p data-lang-key="clinic_portal_subtitle">Healthcare Provider Access</p></div>
+            <div class="content-box" style="max-width: 500px; margin: 0 auto;">
+                <h3><ion-icon name="log-in-outline"></ion-icon><span data-lang-key="clinic_login_title">Please log in to continue</span></h3>
+                <form id="clinic-login-form">
+                    <div class="form-group" style="margin-bottom: 20px;"><label for="login-id" data-lang-key="email_or_phone">Email or Phone Number</label><input type="text" id="login-id" data-lang-key-placeholder="placeholder_email_or_phone" required></div>
+                    <div class="form-group" style="margin-bottom: 20px;"><label for="login-password" data-lang-key="password">Password</label><input type="password" id="login-password" data-lang-key-placeholder="placeholder_password" required></div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;"><span data-lang-key="login">Login</span></button>
+                </form>
+            </div>
+        </div>
+    </main>
+    
+    <main id="clinic-dashboard-page">
+        <div class="container">
+            <div class="dashboard-header">
+                <div>
+                    <h1 data-lang-key="clinic_portal">Clinic Portal</h1>
+                    <p data-lang-key="welcome_generic"></p>
+                </div>
+                <button class="btn btn-secondary nav-btn" data-target="main-page"><span data-lang-key="logout">Logout</span></button>
+            </div>
+            <div class="notification-bar success"><span data-lang-key="logged_in_success">Logged in successfully</span></div>
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="search-patient-tab"><ion-icon name="search-outline"></ion-icon> <span data-lang-key="search_patient">Search Patient</span></button>
+                <button class="tab-btn" data-tab="recent-visits-tab"><ion-icon name="document-text-outline"></ion-icon> <span data-lang-key="recent_visits">Recent Visits</span></button>
+            </div>
+            <div class="tab-content">
+                <div id="search-patient-tab" class="tab-pane active">
+                    <div class="dashboard-grid">
+                        <div class="content-box">
+                            <h3><ion-icon name="search-outline"></ion-icon><span data-lang-key="search_patient">Search Patient</span></h3>
+                            <form class="manual-entry-form" id="dashboard-search-form">
+                                <input type="text" data-lang-key-placeholder="placeholder_patient_id">
+                                <button type="submit" class="btn btn-primary"><span data-lang-key="search">Search</span></button>
+                            </form>
+                            <p class="example-ids" data-lang-key="example_ids">Example IDs: QR12345678, QR87654321</p>
+                        </div>
+                        <div class="content-box">
+                            <h3><ion-icon name="add-outline"></ion-icon><span data-lang-key="add_visit_record">Add Visit Record</span></h3>
+                            <p data-lang-key="add_visit_prompt">Search for a patient first to add visit records</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="recent-visits-tab" class="tab-pane">
+                    <div class="content-box">
+                        <h3 data-lang-key="recent_visits">Recent Visits</h3>
+                        <ul class="visits-list" id="recent-visits-list">
+                            <!-- Recent visits will be populated here by JavaScript -->
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="emergency-modal" class="modal-overlay">
+        <div class="modal-content">
+            <div id="modal-initial-state">
+                <div class="spinner"></div>
+                <p data-lang-key="modal_sending">Sending Emergency Alert to Local Health Post...</p>
+            </div>
+            <div id="modal-success-state" style="display: none;">
+                <div class="success-icon"><ion-icon name="checkmark-circle-outline"></ion-icon></div>
+                <h2 data-lang-key="modal_sent_title">SMS Sent!</h2>
+                <p data-lang-key="modal_sent_desc">An alert has been sent to the nearest health post and your emergency contact.</p>
+                <button id="close-modal-btn" class="btn btn-primary" data-lang-key="ok">OK</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+    <script>
+        // =================================================================
+        // CRITICAL STEP: REPLACE THIS WITH YOUR ACTUAL FIREBASE CONFIG
+        // =================================================================
+        const firebaseConfig = {
+          apiKey: "AIzaSyDDeGXLfA2BAovDQMA5LpnFyoni3vtWy4o",
+          authDomain: "qr-swastha-card.firebaseapp.com",
+          projectId: "qr-swastha-card",
+          storageBucket: "qr-swastha-card.appspot.com",
+          messagingSenderId: "76686687972",
+          appId: "1:76686687972:web:005772016d94b49c2ff6f1"
+        };
+        // =================================================================
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        document.addEventListener('DOMContentLoaded', () => {
+            let previousPageId = 'main-page';
+            let currentLang = 'en';
+            let currentPatientContext = { id: null, data: null };
+            let loginRedirect = { page: 'clinic-dashboard-page' };
+
+            const langStrings = {
+                en: {
+                    app_title: "Mero Swastha Card", emergency_access: "Emergency Access", hero_title: "Digital Health ID for Every Nepali", hero_subtitle: "Your complete medical history in a secure, scannable QR card that works online and offline.", get_health_id: "Get Your Health ID", scan_qr_card: "Scan QR Card", clinic_portal: "Clinic Portal", feature1_title: "Works Offline", feature1_desc: "Access critical health information without internet connection", feature2_title: "Privacy First", feature2_desc: "Your data is encrypted and only accessible to authorized healthcare providers", feature3_title: "Universal Access", feature3_desc: "No smartphone needed - printed QR cards work everywhere", feature4_title: "Family Support", feature4_desc: "Manage health records for elderly and children", back: "Back", form_title: "Create Your Health ID", form_subtitle: "Fill in your basic information to generate your QR Swastha Card", personal_info: "Personal Information", full_name: "Full Name", dob: "Date of Birth", gender: "Gender", blood_group: "Blood Group", phone_number: "Phone Number", emergency_contact: "Emergency Contact", emergency_name: "Contact Name", emergency_phone: "Contact Phone", medical_info: "Medical Information (Optional)", known_allergies: "Known Allergies", current_meds: "Current Medications", medical_history: "Medical History", cancel: "Cancel", create_health_id_button: "Create Health ID", qr_title: "Your Health ID is Ready!", qr_subtitle: "Scan the QR code below to access your health information. <br/>Save it to your phone or print it out.", done: "Done", download_qr: "Download QR", scanner_title: "QR Code Scanner", scanner_subtitle: "Scan patient QR cards to access medical records", qr_scanner_box_title: "QR Scanner", scanner_position: "Position the QR code within the camera frame", start_camera: "Start Camera", scanning: "Scanning QR Code...", manual_entry_title: "Or enter Patient ID manually", search_patient: "Search Patient", example_ids: "Example IDs: QR12345678, QR87654321", back_to_scanner: "Back to Scanner", patient_found_title: "Patient Found", patient_info: "Patient Information", name: "Name", patient_id: "Patient ID", medical_alerts: "Medical Alerts", allergies: "Allergies:", emergency_info: "Emergency Information", last_updated: "Last Updated: 2024-01-15", add_visit_record: "Add New Visit Record", scan_another_patient: "Scan Another Patient", clinic_portal_subtitle: "Healthcare Provider Access", clinic_login_title: "Please log in to continue", email_or_phone: "Email or Phone Number", password: "Password", login: "Login", modal_sending: "Sending Emergency Alert to Local Health Post...", modal_sent_title: "SMS Sent!", modal_sent_desc: "An alert has been sent to the nearest health post and your emergency contact.", ok: "OK", welcome_generic: "Welcome, Health Provider", logout: "Logout", logged_in_success: "Logged in successfully", recent_visits: "Recent Visits", search: "Search", add_visit_prompt: "Search for a patient first to add visit records", no_recent_visits: "No recent visits found.", back_to_dashboard: "Back to Dashboard", visit_date: "Date of Visit", visit_reason: "Reason for Visit / Notes", save_visit: "Save Visit Record", select_file: "Select File", or_drop: "or drop an image", visit_history: "Visit History", download_report: "Download Report", offline_mode_notice: "Viewing Offline Data. Information may not be current.", view_last_patient: "View Last Patient (Offline)",
+                    placeholder_enter_name: "Enter your full name", placeholder_dob: "mm/dd/yyyy", placeholder_gender: "Select gender", placeholder_blood_group: "Select blood group", placeholder_phone: "+977-9XXXXXXXXX", placeholder_contact_name: "Contact person name", placeholder_allergies: "List any allergies (comma separated)", placeholder_meds: "List current medications", placeholder_history: "Brief medical history", placeholder_patient_id: "Enter Patient ID", placeholder_email_or_phone: "Enter your email or phone", placeholder_password: "Enter your password", placeholder_visit_reason: "e.g., Annual check-up, flu symptoms, etc."
+                },
+                ne: {
+                    app_title: "क्यूआर स्वास्थ्य कार्ड", emergency_access: "आपतकालीन पहुँच", hero_title: "हरेक नेपालीका लागि डिजिटल स्वास्थ्य आईडी", hero_subtitle: "तपाईंको पूर्ण मेडिकल इतिहास एक सुरक्षित, स्क्यान गर्न मिल्ने क्यूआर कार्डमा जुन अनलाइन र अफलाइन काम गर्दछ।", get_health_id: "आफ्नो स्वास्थ्य आईडी पाउनुहोस्", scan_qr_card: "क्यूआर कार्ड स्क्यान गर्नुहोस्", clinic_portal: "क्लिनिक पोर्टल", feature1_title: "अफलाइन काम गर्दछ", feature1_desc: "इन्टरनेट जडान बिना महत्त्वपूर्ण स्वास्थ्य जानकारी पहुँच गर्नुहोस्", feature2_title: "गोपनीयता पहिलो", feature2_desc: "तपाईंको डाटा गुप्तिकरण गरिएको छ र केवल अधिकृत स्वास्थ्य सेवा प्रदायकहरूलाई मात्र पहुँच योग्य छ", feature3_title: "विश्वव्यापी पहुँच", feature3_desc: "स्मार्टफोन आवश्यक छैन - छापिएका क्यूआर कार्डहरू जताततै काम गर्छन्", feature4_title: "पारिवारिक समर्थन", feature4_desc: "वृद्ध र बालबालिकाको स्वास्थ्य रेकर्ड व्यवस्थापन गर्नुहोस्", back: "पछाडि", form_title: "आफ्नो स्वास्थ्य आईडी बनाउनुहोस्", form_subtitle: "आफ्नो क्यूआर स्वास्थ्य कार्ड बनाउनको लागि आफ्नो आधारभूत जानकारी भर्नुहोस्", personal_info: "व्यक्तिगत जानकारी", full_name: "पूरा नाम", dob: "जन्म मिति", gender: "लिङ्ग", blood_group: "रक्त समूह", phone_number: "फोन नम्बर", emergency_contact: "आपतकालीन सम्पर्क", emergency_name: "सम्पर्क नाम", emergency_phone: "सम्पर्क फोन", medical_info: "चिकित्सा जानकारी (वैकल्पिक)", known_allergies: "ज्ञात एलर्जीहरू", current_meds: "वर्तमान औषधिहरू", medical_history: "चिकित्सा इतिहास", cancel: "रद्द गर्नुहोस्", create_health_id_button: "स्वास्थ्य आईडी बनाउनुहोस्", qr_title: "तपाईंको स्वास्थ्य आईडी तयार छ!", qr_subtitle: "आफ्नो स्वास्थ्य जानकारी पहुँच गर्न तलको क्यूआर कोड स्क्यान गर्नुहोस्। <br/>यसलाई आफ्नो फोनमा बचत गर्नुहोस् वा प्रिन्ट गर्नुहोस्।", done: "भयो", download_qr: "QR डाउनलोड गर्नुहोस्", scanner_title: "क्यूआर कोड स्क्यानर", scanner_subtitle: "बिरामीको मेडिकल रेकर्ड पहुँच गर्न क्यूआर कार्ड स्क्यान गर्नुहोस्", qr_scanner_box_title: "क्यूआर स्क्यानर", scanner_position: "क्यामेरा फ्रेम भित्र क्यूआर कोड राख्नुहोस्", start_camera: "क्यामेरा सुरु गर्नुहोस्", scanning: "क्यूआर कोड स्क्यान गर्दै...", manual_entry_title: "वा बिरामी आईडी म्यानुअल रूपमा प्रविष्ट गर्नुहोस्", search_patient: "बिरामी खोज्नुहोस्", example_ids: "उदाहरण आईडी: QR12345678, QR87654321", back_to_scanner: "स्क्यानरमा फर्कनुहोस्", patient_found_title: "बिरामी भेटियो", patient_info: "बिरामीको जानकारी", name: "नाम", patient_id: "बिरामी आईडी", medical_alerts: "चिकित्सा चेतावनी", allergies: "एलर्जी:", emergency_info: "आपतकालीन जानकारी", last_updated: "अन्तिम अपडेट: २०२४-०१-१५", add_visit_record: "नयाँ भ्रमण रेकर्ड थप्नुहोस्", scan_another_patient: "अर्को बिरामी स्क्यान गर्नुहोस्", clinic_portal_subtitle: "स्वास्थ्य सेवा प्रदायक पहुँच", clinic_login_title: "जारी राख्न कृपया लग इन गर्नुहोस्", email_or_phone: "इमेल वा फोन नम्बर", password: "पासवर्ड", login: "लग - इन", modal_sending: "स्थानीय स्वास्थ्य चौकीमा आपतकालीन चेतावनी पठाउँदै...", modal_sent_title: "एसएमएस पठाइयो!", modal_sent_desc: "नजिकैको स्वास्थ्य चौकी र तपाईंको आपतकालीन सम्पर्कमा एक चेतावनी पठाइएको छ।", ok: "ठिक छ", welcome_generic: "स्वागत छ, स्वास्थ्य प्रदायक", logout: "लगआउट", logged_in_success: "सफलतापूर्वक लग इन भयो", recent_visits: "भर्खरका भ्रमणहरू", search: "खोज्नुहोस्", add_visit_prompt: "भ्रमण रेकर्डहरू थप्न पहिले बिरामी खोज्नुहोस्", no_recent_visits: "कुनै भर्खरको भ्रमण भेटिएन।", back_to_dashboard: "ड्यासबोर्डमा फर्कनुहोस्", visit_date: "भ्रमणको मिति", visit_reason: "भ्रमणको कारण / नोटहरू", save_visit: "भ्रमण रेकर्ड बचत गर्नुहोस्", select_file: "फाइल चयन गर्नुहोस्", or_drop: "वा छवि छोड्नुहोस्", visit_history: "भ्रमण इतिहास", download_report: "रिपोर्ट डाउनलोड गर्नुहोस्", offline_mode_notice: "अफलाइन डाटा हेर्दै। जानकारी हालको नहुन सक्छ।", view_last_patient: "अन्तिम बिरामी हेर्नुहोस् (अफलाइन)",
+                    placeholder_enter_name: "आफ्नो पूरा नाम प्रविष्ट गर्नुहोस्", placeholder_dob: "मि/दि/yyyy", placeholder_gender: "लिङ्ग चयन गर्नुहोस्", placeholder_blood_group: "रक्त समूह चयन गर्नुहोस्", placeholder_phone: "+९७७-९XXXXXXXXX", placeholder_contact_name: "सम्पर्क व्यक्तिको नाम", placeholder_allergies: "कुनै पनि एलर्जीहरू सूची गर्नुहोस् (अल्पविरामद्वारा छुट्याइएको)", placeholder_meds: "वर्तमान औषधिहरू सूची गर्नुहोस्", placeholder_history: "संक्षिप्त चिकित्सा इतिहास", placeholder_patient_id: "बिरामी आईडी प्रविष्ट गर्नुहोस्", placeholder_email_or_phone: "आफ्नो इमेल वा फोन प्रविष्ट गर्नुहोस्", placeholder_password: "आफ्नो पासवर्ड प्रविष्ट गर्नुहोस्", placeholder_visit_reason: "उदाहरण: वार्षिक जाँच, ज्वरोको लक्षण, आदि।"
+                }
+            };
+            
+            const langToggleBtn = document.getElementById('lang-toggle');
+            const emergencyModal = document.getElementById('emergency-modal');
+            const modalContent = emergencyModal.querySelector('.modal-content');
+            const modalInitialState = document.getElementById('modal-initial-state');
+            const modalSuccessState = document.getElementById('modal-success-state');
+            const darkModeToggle = document.getElementById('dark-mode-toggle');
+
+            const setLanguage = (lang) => {
+                currentLang = lang;
+                document.querySelectorAll('[data-lang-key]').forEach(el => {
+                    const key = el.dataset.langKey;
+                    if(langStrings[lang][key]) el.innerHTML = langStrings[lang][key];
+                });
+                 document.querySelectorAll('[data-lang-key-placeholder]').forEach(el => {
+                    const key = el.dataset.langKeyPlaceholder;
+                     if(langStrings[lang][key]) el.placeholder = langStrings[lang][key];
+                });
+                langToggleBtn.textContent = lang === 'en' ? 'नेपाली' : 'English';
+            };
+
+            langToggleBtn.addEventListener('click', (e) => { e.preventDefault(); setLanguage(currentLang === 'en' ? 'ne' : 'en'); });
+            
+            const navigateTo = (targetId) => {
+                const targetPage = document.getElementById(targetId);
+                const activePage = document.querySelector('main.active');
+
+                if (activePage && activePage.id !== targetId) {
+                    previousPageId = activePage.id;
+                    activePage.style.opacity = '0';
+                    setTimeout(() => {
+                        activePage.classList.remove('active');
+                        targetPage.classList.add('active');
+                        window.scrollTo(0, 0);
+                        if (targetId === 'clinic-dashboard-page') {
+                            loadRecentVisits();
+                        }
+                        setTimeout(() => { targetPage.style.opacity = '1'; }, 20);
+                    }, 400);
+                }
+            };
+
+            document.querySelectorAll('.nav-btn').forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    loginRedirect.page = 'clinic-dashboard-page';
+                    navigateTo(button.dataset.target);
+                });
+            });
+
+            document.getElementById('health-form').addEventListener('submit', (e) => {
+                e.preventDefault();
+                const patientData = {
+                    fullName: document.getElementById('full-name').value,
+                    dob: document.getElementById('dob').value,
+                    gender: document.getElementById('gender').value,
+                    bloodGroup: document.getElementById('blood-group').value,
+                    phone: document.getElementById('phone').value,
+                    emergencyName: document.getElementById('emergency-name').value,
+                    emergencyPhone: document.getElementById('emergency-phone').value,
+                    allergies: document.getElementById('allergies').value,
+                    medications: document.getElementById('medications').value,
+                    history: document.getElementById('history').value,
+                    createdAt: new Date()
+                };
+                db.collection("patients").add(patientData)
+                .then((docRef) => {
+                    console.log("Document written with ID: ", docRef.id);
+                    const patientID = docRef.id;
+                    const qrContainer = document.getElementById('qrcode-container');
+                    qrContainer.innerHTML = '';
+                    new QRCode(qrContainer, {
+                        text: patientID,
+                        width: 220,
+                        height: 220,
+                    });
+                    navigateTo('qr-page');
+                })
+                .catch((error) => {
+                    console.error("Error adding document: ", error);
+                    alert("Could not create Health ID. Please try again.");
+                });
+            });
+            
+            async function displayPatientData(patientId, patientData, isOffline = false) {
+                currentPatientContext = { id: patientId, data: patientData };
+                
+                document.querySelector('#patient-found-page [data-value="name"]').textContent = patientData.fullName;
+                document.querySelector('#patient-found-page [data-value="patient-id"]').textContent = patientId;
+                document.querySelector('#patient-found-page [data-value="dob"]').textContent = patientData.dob;
+                document.querySelector('#patient-found-page [data-value="gender"]').textContent = patientData.gender || 'N/A';
+                document.querySelector('#patient-found-page [data-value="phone"]').textContent = patientData.phone;
+                document.querySelector('#patient-found-page [data-value="blood-group"]').textContent = patientData.bloodGroup;
+                document.querySelector('#patient-found-page [data-value="medications"]').textContent = patientData.medications || 'None';
+                document.querySelector('#patient-found-page [data-value="history"]').textContent = patientData.history || 'None';
+                document.querySelector('#patient-found-page [data-value="emergencyName"]').textContent = patientData.emergencyName;
+                document.querySelector('#patient-found-page [data-value="emergencyPhone"]').textContent = patientData.emergencyPhone;
+
+                const allergiesContainer = document.querySelector('#patient-found-page [data-value="allergies"]');
+                allergiesContainer.innerHTML = '';
+                if (patientData.allergies && patientData.allergies.trim()) {
+                    patientData.allergies.split(',').forEach(allergy => {
+                        if(allergy.trim()){
+                            const tag = document.createElement('span');
+                            tag.className = 'allergy-tag';
+                            tag.innerHTML = `<ion-icon name="alert-outline"></ion-icon> ${allergy.trim().toUpperCase()}`;
+                            allergiesContainer.appendChild(tag);
+                        }
+                    });
+                } else {
+                    allergiesContainer.textContent = 'None';
+                }
+
+                if (isOffline) {
+                    document.getElementById('patient-visit-history').innerHTML = '<li>Visit history is unavailable in offline mode.</li>';
+                    document.getElementById('offline-indicator').style.display = 'block';
+                } else {
+                    await loadPatientVisitHistory(patientId);
+                    document.getElementById('offline-indicator').style.display = 'none';
+                }
+                navigateTo('patient-found-page');
+            }
+
+            async function findAndDisplayPatient(patientID) {
+                if (!patientID || patientID.trim() === "") {
+                    alert("Please enter a Patient ID.");
+                    return;
+                }
+                try {
+                    const doc = await db.collection("patients").doc(patientID.trim()).get();
+                    if (doc.exists) {
+                        const patientData = doc.data();
+                        savePatientLocally(doc.id, patientData); // Save for offline use
+                        displayPatientData(doc.id, patientData, false);
+                    } else {
+                        alert("No patient found with the ID: " + patientID);
+                    }
+                } catch (error) {
+                    console.error("Error getting document:", error);
+                    alert("An error occurred while searching. Please try again.");
+                }
+            }
+            
+            async function loadPatientVisitHistory(patientId) {
+                const list = document.getElementById('patient-visit-history');
+                list.innerHTML = '<li>Loading visit history...</li>';
+                try {
+                    const querySnapshot = await db.collection("patients").doc(patientId).collection("visits").orderBy("visitDate", "desc").get();
+                    list.innerHTML = '';
+                    if(querySnapshot.empty) {
+                        list.innerHTML = '<li>No visit history found.</li>';
+                        return;
+                    }
+                    querySnapshot.forEach(doc => {
+                        const visit = doc.data();
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `<div class="visit-details"><strong>${visit.visitDate}:</strong> ${visit.reason}</div>`;
+                        list.appendChild(listItem);
+                    });
+                } catch(error) {
+                    console.error("Error loading visit history: ", error);
+                    list.innerHTML = '<li>Error loading history.</li>';
+                }
+            }
+
+            document.getElementById('manual-search-form').addEventListener('submit', (e) => { 
+                e.preventDefault(); 
+                const patientIdToSearch = e.target.querySelector('input').value;
+                findAndDisplayPatient(patientIdToSearch);
+            });
+            
+            document.getElementById('clinic-login-form').addEventListener('submit', e => {
+                e.preventDefault();
+                navigateTo(loginRedirect.page);
+            });
+
+            document.getElementById('dashboard-search-form').addEventListener('submit', e => {
+                e.preventDefault();
+                const patientIdToSearch = e.target.querySelector('input').value;
+                findAndDisplayPatient(patientIdToSearch);
+            });
+            
+            document.getElementById('add-visit-record-btn').addEventListener('click', () => {
+                loginRedirect.page = 'add-visit-page';
+                document.getElementById('visit-patient-name').textContent = `For: ${currentPatientContext.data.fullName}`;
+                navigateTo('clinic-portal-page');
+            });
+
+            document.getElementById('add-visit-form').addEventListener('submit', e => {
+                e.preventDefault();
+                if(!currentPatientContext.id) {
+                    alert("No patient selected. Please search for a patient first.");
+                    return;
+                }
+                const visitData = {
+                    visitDate: document.getElementById('visit-date').value,
+                    reason: document.getElementById('visit-reason').value
+                };
+
+                db.collection("patients").doc(currentPatientContext.id).collection("visits").add(visitData)
+                .then(() => {
+                    alert("Visit record saved successfully!");
+                    document.getElementById('add-visit-form').reset();
+                    currentPatientContext = { id: null, data: null };
+                    loginRedirect.page = 'clinic-dashboard-page';
+                    navigateTo('clinic-dashboard-page');
+                })
+                .catch(error => {
+                    console.error("Error saving visit: ", error);
+                    alert("Could not save visit record.");
+                });
+            });
+
+            async function loadRecentVisits() {
+                const list = document.getElementById('recent-visits-list');
+                list.innerHTML = `<div class="spinner"></div>`;
+                try {
+                    const querySnapshot = await db.collectionGroup("visits").orderBy("visitDate", "desc").limit(5).get();
+                    list.innerHTML = '';
+                    if(querySnapshot.empty) {
+                        list.innerHTML = '<li>No recent visits found.</li>';
+                        return;
+                    }
+                    querySnapshot.forEach(doc => {
+                        const visit = doc.data();
+                        const listItem = document.createElement('li');
+                        listItem.innerHTML = `<span class="patient-name">${visit.patientName || 'Unknown Patient'}</span> <span class="visit-date">${visit.visitDate}</span>`;
+                        list.appendChild(listItem);
+                    });
+                } catch(error) {
+                    console.error("Error loading recent visits: ", error);
+                    list.innerHTML = '<li>Error loading visits. (Note: Collection group queries may require a Firestore index. Check the console for a link to create one.)</li>';
+                }
+            }
+
+            document.querySelectorAll('.tab-btn').forEach(button => {
+                button.addEventListener('click', () => {
+                    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+                    document.querySelectorAll('.tab-pane').forEach(pane => pane.classList.remove('active'));
+                    button.classList.add('active');
+                    const targetPane = document.getElementById(button.dataset.tab);
+                    targetPane.classList.add('active');
+
+                    if(button.dataset.tab === 'recent-visits-tab') {
+                        loadRecentVisits();
+                    }
+                });
+            });
+
+            document.querySelectorAll('.emergency-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    modalInitialState.style.display = 'block';
+                    modalSuccessState.style.display = 'none';
+                    emergencyModal.classList.add('visible');
+                    setTimeout(() => {
+                        emergencyModal.style.opacity = '1';
+                        modalContent.style.transform = 'scale(1)';
+                    }, 10);
+                    
+                    setTimeout(() => {
+                        modalInitialState.style.display = 'none';
+                        modalSuccessState.style.display = 'block';
+                    }, 3000);
+                });
+            });
+            
+            document.getElementById('close-modal-btn').addEventListener('click', () => {
+                emergencyModal.style.opacity = '0';
+                modalContent.style.transform = 'scale(0.95)';
+                setTimeout(() => emergencyModal.classList.remove('visible'), 300);
+            });
+            
+            // --- Drag and Drop QR Code Scanner ---
+            const dropZone = document.getElementById('drop-zone');
+            const fileInput = document.getElementById('qr-file-input');
+
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, e => { e.preventDefault(); e.stopPropagation(); }, false);
+            });
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => dropZone.classList.add('dragover'), false);
+            });
+            ['dragleave', 'drop'].forEach(eventName => {
+                dropZone.addEventListener(eventName, () => dropZone.classList.remove('dragover'), false);
+            });
+            dropZone.addEventListener('drop', e => {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                handleFile(files[0]);
+            });
+            fileInput.addEventListener('change', e => { if(e.target.files.length) { handleFile(e.target.files[0]); } });
+            
+            function handleFile(file) {
+                if(!file || !file.type.startsWith('image/')) { alert('Please drop or select an image file.'); return; }
+                const reader = new FileReader();
+                reader.onload = e => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = img.width; canvas.height = img.height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, img.width, img.height);
+                        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                        const code = jsQR(imageData.data, imageData.width, imageData.height, { inversionAttempts: "dontInvert" });
+                        if(code) {
+                            findAndDisplayPatient(code.data);
+                        } else {
+                            alert("Could not find a QR code in the image.");
+                        }
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+            
+            // --- Dark Mode Logic ---
+            darkModeToggle.addEventListener('change', function() {
+                if (this.checked) {
+                    document.body.classList.add('dark-mode');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    document.body.classList.remove('dark-mode');
+                    localStorage.setItem('theme', 'light');
+                }
+            });
+            
+            const currentTheme = localStorage.getItem('theme');
+            if (currentTheme === 'dark') {
+                document.body.classList.add('dark-mode');
+                darkModeToggle.checked = true;
+            }
+
+            document.getElementById('download-qr-btn').addEventListener('click', () => {
+                const canvas = document.querySelector('#qrcode-container canvas');
+                if (canvas) {
+                    const dataUrl = canvas.toDataURL('image/png');
+                    const link = document.createElement('a');
+                    link.download = 'health-id-qr.png';
+                    link.href = dataUrl;
+                    link.click();
+                }
+            });
+
+            document.getElementById('download-report-btn').addEventListener('click', async () => {
+                const patient = currentPatientContext.data;
+                const patientId = currentPatientContext.id;
+                
+                let visitsHtml = '<li>No visit history found.</li>';
+                try {
+                    const querySnapshot = await db.collection("patients").doc(patientId).collection("visits").orderBy("visitDate", "desc").get();
+                    if(!querySnapshot.empty) {
+                        visitsHtml = '';
+                        querySnapshot.forEach(doc => {
+                            const visit = doc.data();
+                            visitsHtml += `<li><strong>${visit.visitDate}:</strong> ${visit.reason}</li>`;
+                        });
+                    }
+                } catch (e) { console.error(e); }
+
+                const reportHtml = `
+                    <!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Patient Report: ${patient.fullName}</title>
+                    <style>body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;margin:0;padding:20px;background-color:#f9f9f9;}.container{max-width:800px;margin:auto;background:white;border:1px solid #ddd;padding:30px;border-radius:8px;}h1,h2{border-bottom:2px solid #eee;padding-bottom:10px;}.grid{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-bottom:20px;}.item{display:flex;flex-direction:column;}.item .label{color:#666;font-size:0.9em;}.item .value{font-size:1.1em;font-weight:500;}.visits-list{list-style:none;padding:0;}.visits-list li{padding:10px;border-bottom:1px solid #eee;}</style>
+                    </head><body><div class="container"><h1>Health Report</h1><h2>Patient Information</h2>
+                    <div class="grid"><div class="item"><span class="label">Name</span><span class="value">${patient.fullName}</span></div><div class="item"><span class="label">Patient ID</span><span class="value">${patientId}</span></div><div class="item"><span class="label">Date of Birth</span><span class="value">${patient.dob}</span></div><div class="item"><span class="label">Gender</span><span class="value">${patient.gender || 'N/A'}</span></div><div class="item"><span class="label">Blood Group</span><span class="value">${patient.bloodGroup}</span></div></div>
+                    <h2>Medical Details</h2><div class="grid"><div class="item"><span class="label">Allergies</span><span class="value">${patient.allergies || 'None'}</span></div><div class="item"><span class="label">Current Medications</span><span class="value">${patient.medications || 'None'}</span></div><div class="item" style="grid-column:1/-1;"><span class="label">Medical History</span><span class="value">${patient.history || 'None'}</span></div></div>
+                    <h2>Emergency Contact</h2><div class="grid"><div class="item"><span class="label">Name</span><span class="value">${patient.emergencyName}</span></div><div class="item"><span class="label">Phone</span><span class="value">${patient.emergencyPhone}</span></div></div>
+                    <h2>Visit History</h2><ul class="visits-list">${visitsHtml}</ul></div></body></html>`;
+
+                const blob = new Blob([reportHtml], { type: 'text/html' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = `health-report-${patient.fullName.replace(' ', '-')}.html`;
+                link.click();
+                URL.revokeObjectURL(link.href);
+            });
+            
+            // --- Offline Caching Logic ---
+            const offlineButton = document.getElementById('offline-access-button');
+
+            function savePatientLocally(patientId, patientData) {
+                const dataToStore = { id: patientId, data: patientData };
+                localStorage.setItem('lastViewedPatient', JSON.stringify(dataToStore));
+                checkOfflineButton();
+            }
+
+            function loadPatientLocally() {
+                const storedData = localStorage.getItem('lastViewedPatient');
+                if (storedData) {
+                    const parsedData = JSON.parse(storedData);
+                    displayPatientData(parsedData.id, parsedData.data, true); // true indicates offline mode
+                }
+            }
+
+            function checkOfflineButton() {
+                if (localStorage.getItem('lastViewedPatient')) {
+                    offlineButton.style.display = 'inline-flex';
+                } else {
+                    offlineButton.style.display = 'none';
+                }
+            }
+            
+            offlineButton.addEventListener('click', loadPatientLocally);
+            
+            checkOfflineButton(); // Check on initial load
+            setLanguage('en');
+        });
+    </script>
+</body>
+</html>
