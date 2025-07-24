@@ -1,1 +1,0 @@
-# Mero-Swastha-Card
