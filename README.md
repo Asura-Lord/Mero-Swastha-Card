@@ -1,9 +1,6 @@
-Mero Swastha Card - Digital Health Platform
-![alt text](https://img.shields.io/badge/License-MIT-blue.svg)
-![alt text](https://img.shields.io/github/stars/your-username/your-repo-name?style=social)
-![alt text](https://img.shields.io/github/forks/your-username/your-repo-name?style=social)
-A unified digital health ecosystem designed to modernize healthcare in Nepal. It connects patients and healthcare providers through a portable, QR-code-based Digital Health ID and a powerful, web-based Clinic Portal.
-<!--_**Note:** Replace the screenshot link below with an actual screenshot of your application's main page._-->
+
+A unified digital health ecosystem designed to modernize healthcare in Nepal. It connects patients and healthcare providers through a portable, 
+QR-code-based Digital Health ID and a powerful, web-based Clinic Portal.
 Table of Contents
 About The Project
 Key Features
