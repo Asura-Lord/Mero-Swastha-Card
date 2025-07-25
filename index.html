@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mero Swastha Card</title>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- External CSS -->
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Ionicons -->
+    <script type="module" src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@5.5.2/dist/ionicons/ionicons.js"></script>
+</head>
+<body>
+    <div class="page-wrapper">
+        <main id="main-page" class="active">
+            <div class="container">
+                <header>
+                    <div class="logo">
+                        <ion-icon name="qr-code-outline"></ion-icon>
+                        <span data-lang-key="app_title">Mero Swastha Card</span>
+                        <div class="theme-switch-wrapper">
+                            <label class="theme-switch" for="dark-mode-toggle">
+                                <input type="checkbox" id="dark-mode-toggle" />
+                                <span class="slider round">
+                                    <ion-icon name="moon" class="moon-icon"></ion-icon>
+                                    <ion-icon name="sunny" class="sun-icon"></ion-icon>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="nav-actions">
+                        <div class="lang-selector"><ion-icon name="globe-outline"></ion-icon><a id="lang-toggle" href="#">English</a></div>
+                        <div class="header-controls">
+                            <button class="emergency-btn"><ion-icon name="alert-circle-outline"></ion-icon><span data-lang-key="emergency_access">Emergency Access</span></button>
+                            <button id="header-login-btn" class="btn btn-primary header-login-btn" data-lang-key="login">Login</button>
+                            <div id="user-profile-container">
+                                <div id="user-avatar"></div>
+                                <div class="profile-details">
+                                    <div class="profile-text-wrapper">
+                                        <div id="user-profile-greeting">Welcome</div>
+                                        <div id="user-profile-name"></div>
+                                    </div>
+                                    <div class="profile-dropdown">
+                                        <a href="#" id="my-details-link"><ion-icon name="person-circle-outline"></ion-icon> <span data-lang-key="my_details">My Details</span></a>
+                                        <button id="logout-btn"><ion-icon name="log-out-outline"></ion-icon> <span data-lang-key="logout">Logout</span></button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+                <section class="hero">
+                    <h1 data-lang-key="hero_title">Digital Health ID for Every Nepali</h1>
+                    <p data-lang-key="hero_subtitle">Your complete medical history in a secure, scannable QR card that works online and offline.</p>
+                    <div class="hero-buttons">
+                        <button id="get-health-id-btn" class="btn btn-primary"><ion-icon name="id-card-outline"></ion-icon><span data-lang-key="get_health_id">Get Your Health ID</span></button>
+                        <button class="btn btn-secondary nav-btn" data-target="scanner-page"><ion-icon name="scan-outline"></ion-icon><span data-lang-key="scan_qr_card">Scan QR Card</span></button>
+                        <button id="clinic-portal-btn" class="btn btn-secondary"><ion-icon name="business-outline"></ion-icon><span data-lang-key="clinic_portal">Clinic Portal</span></button>
+                        <button id="offline-access-button" class="btn btn-secondary"><ion-icon name="cloud-offline-outline"></ion-icon><span data-lang-key="view_last_patient">View Last Patient (Offline)</span></button>
+                    </div>
+                </section>
+                <section class="features">
+                    <div class="feature-card" data-feature-icon="cloud-offline-outline"><ion-icon name="cloud-offline-outline"></ion-icon><h3 data-lang-key="feature1_title">Works Offline</h3><p data-lang-key="feature1_desc">Access critical health information without internet connection</p></div>
+                    <div class="feature-card" data-feature-icon="shield-checkmark-outline"><ion-icon name="shield-checkmark-outline"></ion-icon><h3 data-lang-key="feature2_title">Privacy First</h3><p data-lang-key="feature2_desc">Your data is encrypted and only accessible to authorized healthcare providers</p></div>
+                    <div class="feature-card" data-feature-icon="earth-outline"><ion-icon name="earth-outline"></ion-icon><h3 data-lang-key="feature3_title">Universal Access</h3><p data-lang-key="feature3_desc">No smartphone needed - printed QR cards work everywhere</p></div>
+                    <div class="feature-card" data-feature-icon="people-outline"><ion-icon name="people-outline"></ion-icon><h3 data-lang-key="feature4_title">Family Support</h3><p data-lang-key="feature4_desc">Manage health records for elderly and children</p></div>
+                </section>
+            </div>
+        </main>
+    
+        <main id="patient-dashboard-page">
+            <div class="container">
+                <header><a href="#" class="back-link nav-btn" data-target="main-page"><ion-icon name="arrow-back-outline"></ion-icon><span data-lang-key="back">Back to Home</span></a></header>
+                <div class="dashboard-welcome-header">
+                    <h1 data-value="dashboard-welcome-name"></h1>
+                    <p data-value="patient-id-display"></p>
+                </div>
+                <div class="dashboard-grid">
+                     <div> <!-- Left Column -->
+                        <div class="content-box">
+                            <h3><ion-icon name="person-circle-outline"></ion-icon><span data-lang-key="personal_info">Personal Information</span></h3>
+                            <div class="info-grid">
+                                <div class="info-item"><span class="label" data-lang-key="dob">Date of Birth</span><span class="value" data-value="dob"></span></div>
+                                <div class="info-item"><span class="label" data-lang-key="gender">Gender</span><span class="value" data-value="gender"></span></div>
+                                <div class="info-item"><span class="label" data-lang-key="phone_number">Phone Number</span><span class="value" data-value="phone"></span></div>
+                                <div class="info-item"><span class="label" data-lang-key="blood_group">Blood Group</span><span class="value blood-group" data-value="blood-group"></span></div>
+                                <div class="info-item" style="grid-column: 1 / -1;"><span class="label" data-lang-key="address">Address</span><span class="value" data-value="address"></span></div>
+                            </div>
+                        </div>
+                        <div class="content-box">
+                            <h3><ion-icon name="alert-circle-outline" style="color: var(--danger-color);"></ion-icon><span data-lang-key="medical_alerts">Medical Alerts</span></h3>
+                            <div class="info-item" style="margin-bottom: 15px;"><span class="label" data-lang-key="known_allergies">Known Allergies</span><div class="allergies-list" data-value="allergies"></div></div>
+                            <div class="info-item"><span class="label" data-lang-key="current_meds">Current Medications</span><span class="value" data-value="medications"></span></div>
+                        </div>
+                     </div>
+                     <div> <!-- Right Column -->
+                        <div class="content-box">
+                            <h3><ion-icon name="qr-code-outline"></ion-icon> My Health Card QR</h3>
+                            <div class="qr-code-display">
+                                <div id="patient-dashboard-qrcode-container"></div>
+                                <div class="btn-group">
+                                    <button id="dashboard-download-qr-btn" class="btn btn-secondary"><ion-icon name="download-outline"></ion-icon><span data-lang-key="download_qr">Download QR</span></button>
+                                </div>
+                            </div>
+                        </div>
+                     </div>
+                </div>
+            </div>
+        </main>
+    
+        <main id="form-page">
+            <div class="container">
+                <header><a href="#" class="back-link nav-btn" data-target="main-page"><ion-icon name="arrow-back-outline"></ion-icon><span data-lang-key="back">Back</span></a></header>
+                <div class="page-header"><h1 data-lang-key="form_title">Create Your Health ID</h1><p data-lang-key="form_subtitle">Fill in your basic information to generate your QR Swastha Card</p></div>
+                <form id="health-form" class="content-box" style="max-width: 800px; margin: 0 auto;">
+                     <div class="form-section"><h3><ion-icon name="person-circle-outline" style="color: var(--primary-color)"></ion-icon><span data-lang-key="personal_info">Personal Information</span></h3><div class="form-grid">
+                         <div class="form-group"><label for="full-name" data-lang-key="full_name">Full Name</label><input type="text" id="full-name" data-lang-key-placeholder="placeholder_enter_name" required></div>
+                         <div class="form-group"><label for="dob" data-lang-key="dob">Date of Birth</label><input type="text" id="dob" data-lang-key-placeholder="placeholder_dob" onfocus="(this.type='date')" onblur="(this.type='text')" required></div>
+                         <div class="form-group"><label for="gender" data-lang-key="gender">Gender</label><select id="gender" required><option value="" disabled selected data-lang-key="placeholder_gender">Select gender</option><option value="Male" data-lang-key="gender_male">Male</option><option value="Female" data-lang-key="gender_female">Female</option><option value="Other" data-lang-key="gender_other">Other</option></select></div>
+                         <div class="form-group"><label for="blood-group" data-lang-key="blood_group">Blood Group</label><select id="blood-group" required><option value="" disabled selected data-lang-key="placeholder_blood_group">Select blood group</option><option value="A+">A+</option><option value="A-">A-</option><option value="B+">B+</option><option value="B-">B-</option><option value="AB+">AB+</option><option value="AB-">AB-</option><option value="O+">O+</option><option value="O-">O-</option></select></div>
+                         <div class="form-group"><label for="phone" data-lang-key="phone_number">Phone Number</label><input type="tel" id="phone" data-lang-key-placeholder="placeholder_phone" required></div>
+                         <div class="form-group full-width"><label for="address" data-lang-key="address">Address</label><textarea id="address" data-lang-key-placeholder="placeholder_address" required></textarea></div>
+                     </div></div>
+                     <div class="form-section"><h3><ion-icon name="alert-circle-outline"></ion-icon><span data-lang-key="emergency_contact">Emergency Contact</span></h3><div class="form-grid"><div class="form-group"><label for="emergency-name" data-lang-key="emergency_name">Contact Name</label><input type="text" id="emergency-name" data-lang-key-placeholder="placeholder_contact_name" required></div><div class="form-group"><label for="emergency-phone" data-lang-key="emergency_phone">Contact Phone</label><input type="tel" id="emergency-phone" data-lang-key-placeholder="placeholder_phone" required></div></div></div>
+                     <div class="form-section"><h3><ion-icon name="medkit-outline" style="color: var(--primary-color)"></ion-icon><span data-lang-key="medical_info">Medical Information (Optional)</span></h3><div class="form-grid"><div class="form-group full-width"><label for="allergies" data-lang-key="known_allergies">Known Allergies</label><textarea id="allergies" data-lang-key-placeholder="placeholder_allergies"></textarea></div><div class="form-group full-width"><label for="medications" data-lang-key="current_meds">Current Medications</label><textarea id="medications" data-lang-key-placeholder="placeholder_meds"></textarea></div><div class="form-group full-width"><label for="history" data-lang-key="medical_history">Medical History</label><textarea id="history" data-lang-key-placeholder="placeholder_history"></textarea></div></div></div>
+                     <div class="page-actions"><button type="button" class="btn btn-secondary nav-btn" data-target="main-page"><span data-lang-key="cancel">Cancel</span></button><button type="submit" class="btn btn-primary"><span data-lang-key="create_health_id_button">Create Health ID</span></button></div>
+                </form>
+            </div>
+        </main>
+        
+        <main id="qr-page">
+             <div class="container"><div class="page-header"><h1 data-lang-key="qr_title">Your Health ID is Ready!</h1><p data-lang-key="qr_subtitle">Scan the QR code below to access your health information. <br/>Save it to your phone or print it out.</p></div><div class="qr-code-display"><div id="qrcode-container"></div><div class="btn-group"><button id="download-qr-btn" class="btn btn-secondary"><ion-icon name="download-outline"></ion-icon><span data-lang-key="download_qr">Download QR</span></button><button class="btn btn-primary nav-btn" data-target="main-page"><ion-icon name="checkmark-done-outline"></ion-icon><span data-lang-key="done">Done</span></button></div></div></div>
+        </main>
+    
+        <main id="scanner-page">
+            <div class="container">
+                <header><a href="#" class="back-link nav-btn" data-target="main-page"><ion-icon name="arrow-back-outline"></ion-icon><span data-lang-key="back">Back</span></a></header>
+                <div class="page-header"><h1 data-lang-key="scanner_title">QR Code Scanner</h1><p data-lang-key="scanner_subtitle">Scan patient QR cards to access medical records</p></div>
+                <div style="max-width: 600px; margin: 0 auto;">
+                    <div class="content-box">
+                        <h3><ion-icon name="camera-outline"></ion-icon><span data-lang-key="qr_scanner_box_title">QR Scanner</span></h3>
+                        <video id="scanner-video" playsinline></video>
+                        <div class="camera-placeholder" id="drop-zone">
+                            <div class="camera-idle" id="camera-idle-view">
+                                <ion-icon name="camera-outline"></ion-icon>
+                                <span data-lang-key="scanner_position_or_click">Click to start camera</span>
+                                <p style="margin: 10px 0;" data-lang-key="or_drop">or drop an image</p>
+                                <label for="qr-file-input" class="btn btn-secondary"><ion-icon name="cloud-upload-outline"></ion-icon><span data-lang-key="select_file">Select File</span></label>
+                                <input type="file" id="qr-file-input" accept="image/*" style="display:none;">
+                            </div>
+                            <div class="camera-scanning" id="camera-scanning-view" style="display: none;">
+                                <div class="scanner-animation"></div>
+                                <span data-lang-key="scanning">Scanning QR Code...</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="content-box"><h3><ion-icon name="search-outline"></ion-icon><span data-lang-key="manual_entry_title">Or enter Patient ID manually</span></h3><form class="manual-entry-form" id="manual-search-form"><input type="text" data-lang-key-placeholder="placeholder_patient_id_or_name"><button type="submit" class="btn btn-primary"><span data-lang-key="search_patient">Search Patient</span></button></form><p class="example-ids" data-lang-key="example_ids">Example IDs: QR12345678, QR87654321</p></div>
+                </div>
+            </div>
+        </main>
+        
+        <main id="patient-found-page">
+            <div class="container">
+                <header><a class="back-link nav-btn" data-target="scanner-page"><ion-icon name="arrow-back-outline"></ion-icon><span data-lang-key="back">Back</span></a></header>
+                <div id="offline-indicator" class="notification-bar warning" style="display: none;"><ion-icon name="cloud-offline-outline"></ion-icon> <span data-lang-key="offline_mode_notice">Viewing Offline Data. Information may not be current.</span></div>
+                <div class="page-header"><h1 data-lang-key="patient_found_title">Patient Record</h1></div>
+                <div style="max-width: 800px; margin: 0 auto;">
+                    <div id="patient-info-box" class="content-box">
+                        <h3><ion-icon name="person-circle-outline"></ion-icon><span data-lang-key="patient_info">Patient Information</span></h3>
+                        <div class="info-grid">
+                            <div class="info-item"><span class="label" data-lang-key="name">Name</span><span class="value" data-value="name"></span></div>
+                            <div class="info-item"><span class="label" data-lang-key="patient_id">Patient ID</span><span class="value" data-value="patient-id"></span></div>
+                            <div class="info-item"><span class="label" data-lang-key="dob">Date of Birth</span><span class="value" data-value="dob"></span></div>
+                            <div class="info-item"><span class="label" data-lang-key="gender">Gender</span><span class="value" data-value="gender"></span></div>
+                            <div class="info-item"><span class="label" data-lang-key="phone_number">Phone Number</span><span class="value" data-value="phone"></span></div>
+                            <div class="info-item"><span class="label" data-lang-key="blood_group">Blood Group</span><span class="value blood-group" data-value="blood-group"></span></div>
+                            <div class="info-item" style="grid-column: 1 / -1;"><span class="label" data-lang-key="address">Address</span><span class="value" data-value="address"></span></div>
+                        </div>
+                    </div>
+                    <div class="content-box"><h3><ion-icon name="alert-circle-outline" style="color: var(--danger-color);"></ion-icon><span data-lang-key="medical_alerts">Medical Alerts</span></h3><div class="info-item" style="margin-bottom: 15px;"><span class="label" data-lang-key="known_allergies">Known Allergies</span><div class="allergies-list" data-value="allergies"></div></div><div class="info-item" style="margin-bottom: 15px;"><span class="label" data-lang-key="current_meds">Current Medications</span><span class="value" data-value="medications"></span></div><div class="info-item"><span class="label" data-lang-key="medical_history">Medical History</span><span class="value" data-value="history"></span></div></div>
+                    
+                    <div id="patient-recommendations-container"></div>
+                    
+                    <div class="content-box"><h3><ion-icon name="call-outline" style="color: var(--warning-color);"></ion-icon><span data-lang-key="emergency_info">Emergency Information</span></h3><div class="info-grid"><div class="info-item"><span class="label" data-lang-key="emergency_name">Contact Name</span><span class="value" data-value="emergencyName"></span></div><div class="info-item"><span class="label" data-lang-key="emergency_phone">Contact Phone</span><span class="value" data-value="emergencyPhone"></span></div></div></div>
+                    
+                    <div class="content-box"><h3><ion-icon name="time-outline"></ion-icon><span data-lang-key="visit_history">Visit History</span></h3><div id="patient-visit-history" class="timeline"></div></div>
+
+                    <div class="patient-page-actions">
+                        <button class="btn btn-primary" id="add-visit-record-btn"><ion-icon name="add-circle-outline"></ion-icon><span data-lang-key="add_visit_record">Add New Visit Record</span></button>
+                        <button class="btn btn-secondary" id="download-report-btn"><ion-icon name="document-text-outline"></ion-icon><span data-lang-key="download_report">Download Report</span></button>
+                        <button class="btn btn-secondary" id="print-health-card-btn"><ion-icon name="print-outline"></ion-icon><span>Print Health Card</span></button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    
+        <main id="add-visit-page">
+            <div class="container">
+                <header><a href="#" class="back-link nav-btn" data-target="patient-found-page"><ion-icon name="arrow-back-outline"></ion-icon><span data-lang-key="back">Back</span></a></header>
+                <div class="page-header"><h1 data-lang-key="add_visit_record">Add Visit Record</h1><p id="visit-patient-name"></p></div>
+                <div class="content-box" style="max-width: 600px; margin: 0 auto;">
+                    <form id="add-visit-form">
+                        <div class="form-group full-width" style="margin-bottom: 20px;"><label for="visit-date" data-lang-key="visit_date">Date of Visit</label><input type="date" id="visit-date" required></div>
+                        <div class="form-group full-width" style="margin-bottom: 20px;"><label for="visit-reason" data-lang-key="visit_reason">Reason for Visit / Notes</label><textarea id="visit-reason" rows="4" data-lang-key-placeholder="placeholder_visit_reason" required></textarea></div>
+                        <div class="form-group full-width" style="margin-bottom: 20px;">
+                            <label for="visit-report-upload">Upload Lab Report (Optional)</label>
+                            <input type="file" id="visit-report-upload" accept=".pdf,.jpg,.jpeg,.png">
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width: 100%;"><ion-icon name="save-outline"></ion-icon><span data-lang-key="save_visit">Save Visit Record</span></button>
+                        <div id="upload-progress" style="display:none; margin-top:15px; text-align:center;">Uploading...</div>
+                    </form>
+                </div>
+            </div>
+        </main>
+        
+        <main id="clinic-dashboard-page">
+            <div class="container">
+                <div class="dashboard-header">
+                    <div>
+                        <h1 data-lang-key="clinic_portal">Clinic Portal</h1>
+                        <p data-lang-key="clinic_portal_subtitle"></p>
+                    </div>
+                </div>
+                <div class="tabs">
+                    <button class="tab-btn active" data-tab="search-patient-tab"><ion-icon name="search-outline"></ion-icon> <span data-lang-key="search_patient">Search Patient</span></button>
+                    <button class="tab-btn" data-tab="all-patients-tab"><ion-icon name="people-outline"></ion-icon> <span data-lang-key="all_patients">All Patients</span></button>
+                </div>
+                <div class="tab-content">
+                    <div id="search-patient-tab" class="tab-pane active">
+                         <div class="content-box">
+                            <h3><ion-icon name="search-outline"></ion-icon><span data-lang-key="search_patient">Search Patient</span></h3>
+                            <form class="manual-entry-form" id="dashboard-search-form">
+                                <input type="text" data-lang-key-placeholder="placeholder_patient_id_or_name">
+                                <button type="submit" class="btn btn-primary"><span data-lang-key="search">Search</span></button>
+                            </form>
+                            <p class="example-ids" data-lang-key="example_ids">Example IDs: QR12345678, QR87654321</p>
+                        </div>
+                    </div>
+                    <div id="all-patients-tab" class="tab-pane">
+                        <div class="content-box">
+                            <h3 data-lang-key="all_patients">All Patients</h3>
+                            <ul class="visits-list" id="all-patients-list">
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <ion-icon name="hardware-chip-outline"></ion-icon>
+                <span>Developed by Root Force</span>
+            </div>
+            <div class="footer-links">
+                 <a href="mailto:rootforce@support.com">
+                    <ion-icon name="mail-outline"></ion-icon>
+                    <span>rootforce@support.com</span>
+                </a>
+            </div>
+            <div class="copyright">
+                © <span id="copyright-year">2024</span> Mero Swastha Card. All Rights Reserved.
+            </div>
+        </div>
+    </footer>
+
+    <!-- MODALS -->
+    <div id="emergency-modal" class="modal-overlay">
+        <div class="modal-content">
+             <button class="modal-close-btn">×</button>
+            <div id="modal-initial-state">
+                <div class="spinner"></div>
+                <p data-lang-key="modal_sending">Sending Emergency Alert to Local Health Post...</p>
+            </div>
+            <div id="modal-success-state" style="display: none;">
+                <div class="success-icon"><ion-icon name="checkmark-circle-outline"></ion-icon></div>
+                <h2 data-lang-key="modal_sent_title">SMS Sent!</h2>
+                <p data-lang-key="modal_sent_desc">An alert has been sent to the nearest health post and your emergency contact.</p>
+                <button class="btn btn-primary close-modal-btn" data-lang-key="ok">OK</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="login-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-btn">×</button>
+            <div id="login-choice-view">
+                <h2>Login As</h2>
+                <div class="choice-buttons">
+                    <button id="choose-patient-btn" class="btn btn-primary"><ion-icon name="person-outline"></ion-icon> Patient</button>
+                    <button id="choose-medical-btn" class="btn btn-secondary"><ion-icon name="medkit-outline"></ion-icon> Medical Official</button>
+                </div>
+            </div>
+            <div id="patient-login-view" class="login-form-view">
+                <button class="modal-back-btn"><ion-icon name="arrow-back-outline"></ion-icon> Back</button>
+                <h2>Patient Login</h2>
+                <form id="patient-login-form">
+                    <div class="form-group"><label for="patient-phone">Phone Number</label><input type="tel" id="patient-phone" placeholder="+977-9XXXXXXXXX" required></div>
+                    <div class="form-group"><label for="patient-password">Password</label><input type="password" id="patient-password" placeholder="Enter your password" required></div>
+                    <div class="form-actions"><button type="submit" class="btn btn-primary" style="width: 100%;">Login</button></div>
+                </form>
+            </div>
+            <div id="medical-login-view" class="login-form-view">
+                <button class="modal-back-btn"><ion-icon name="arrow-back-outline"></ion-icon> Back</button>
+                <h2>Medical Official Login</h2>
+                <form id="medical-login-form">
+                    <div class="form-group"><label for="healthpost-name">Healthpost Name</label><select id="healthpost-name" required><option value="" disabled selected data-lang-key="placeholder_select_hospital">Select a hospital</option></select></div>
+                    <div class="form-group"><label for="medical-id">Your ID</label><input type="text" id="medical-id" placeholder="Enter your official ID" required></div>
+                    <div class="form-group"><label for="login-code">Login Code</label><input type="password" id="login-code" placeholder="Enter your login code" required></div>
+                    <div class="form-actions"><button type="submit" class="btn btn-primary" style="width: 100%;">Login</button></div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div id="new-password-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="modal-close-btn">×</button>
+            <div class="modal-icon"><ion-icon name="key-outline"></ion-icon></div>
+            <h2 data-lang-key="new_password_title">Password Information</h2>
+            <p data-lang-key="new_password_notification_modal">You will get your new password on your number through SMS. Thank you for using Mero Swastha Card.</p>
+            <button class="btn btn-primary close-modal-btn" style="width: 100%;" data-lang-key="ok">OK</button>
+        </div>
+    </div>
+
+    <div id="toast-notification" class="toast-notification"></div>
+
+    <!-- Third-Party Libraries -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <!-- Firebase SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-storage.js"></script>
+
+    <!-- Your External JavaScript -->
+    <script src="script.js"></script>
+
+</body>
+</html>
